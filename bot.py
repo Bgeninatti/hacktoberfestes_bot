@@ -6,6 +6,9 @@ from enum import Enum
 import discord
 import pandas as pd
 from discord.ext import commands
+from logger import get_logger
+
+LOGGER = get_logger(__name__)
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -20,7 +23,7 @@ VALIDATION_FIELD = config["DEFAULT"]["ValidationField"]
 
 RIDS = set(pd.read_csv(LIST)[VALIDATION_FIELD].str.lower())
 
-bot = commands.Bot(command_prefix="!")
+bot = commands.Bot(command_prefix="\\")
 
 class RegistrationStatus(Enum):
     OK = 0
@@ -66,6 +69,14 @@ async def estado(ctx):
 @bot.command(name="registro", help="Comando de registro", pass_context=True)
 async def registro(ctx, ticket_id: str):
 
+    LOGGER.info("Command received", extra={'author': ctx.author.name})
+
+    if not isinstance(ctx.channel, discord.DMChannel):
+        LOGGER.error("Command must be sent as private message",
+                     extra={'author': ctx.author.name})
+        return
+
+    LOGGER.info("Searching group member for user", extra={'author': ctx.author.name})
     # Load the server
     server = bot.get_guild(int(GUILD))
     # FIXME: This obscure hack to update the member list
@@ -77,10 +88,17 @@ async def registro(ctx, ticket_id: str):
     msg = None
 
     if not member:
+        LOGGER.error("User is not member of the PyConAr server",
+                     extra={'author': ctx.author.name})
         msg = f"Tenes que ingresar al server de PyConAr 2020 antes de registrarte."
         await ctx.send(msg)
     else:
+        LOGGER.info("Resolving status", extra={'author': ctx.author.name})
+
         status = register_user(ticket_id.lower(), ctx.message)
+
+        LOGGER.error("Status resolved",
+                     extra={'author': ctx.author.name, 'status': status})
 
         if status == RegistrationStatus.OK:
             msg = f"Usuario {ctx.message.author.mention} registrado! :)"
