@@ -1,6 +1,7 @@
 import asyncio
 import configparser
 import csv
+import os
 from enum import Enum
 
 import discord
@@ -10,8 +11,24 @@ from logger import get_logger
 
 LOGGER = get_logger(__name__)
 
-config = configparser.ConfigParser()
-config.read("config.ini")
+
+if os.path.exists("config.ini"):
+    # This is for local deploy with a config file
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+else:
+    # This is for Heroku where configvars are set as environ variables
+    config = {
+        "DEFAULT": {
+            "Token": os.environ.get("Token"),
+            "Guild": os.environ.get("Guild"),
+            "Channel": os.environ.get("Channel"),
+            "AdminChannel": os.environ.get("AdminChannel"),
+            "Role": os.environ.get("Role"),
+            "List": os.environ.get("List"),
+            "ValidationField": os.environ.get("ValidationField")
+        }
+    }
 
 TOKEN = config["DEFAULT"]["Token"]
 GUILD = config["DEFAULT"]["Guild"]
