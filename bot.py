@@ -10,14 +10,15 @@ from discord.ext import commands
 from logger import get_logger
 
 LOGGER = get_logger(__name__)
-BASE_DIR = os.path.dirname(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_FILE = os.path.join(BASE_DIR, 'config.ini')
 
 
-if os.path.exists("config.ini"):
+if os.path.exists(CONFIG_FILE):
     # This is for local deploy with a config file
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    config.read(CONFIG_FILE)
+    LOGGER.info("Configuration loaded from config file", extra={'file': CONFIG_FILE})
 else:
     # This is for Heroku where configvars are set as environ variables
     config = {
@@ -31,6 +32,7 @@ else:
             "ValidationField": os.environ.get("ValidationField")
         }
     }
+    LOGGER.info("Configuration loaded from environment variables")
 
 
 TOKEN = config["DEFAULT"]["Token"]
@@ -57,10 +59,7 @@ def get_ready_tickets():
     registered = set()
     with open(ATTENDANCE_FILE, "r") as f:
         reader = csv.reader(f)
-        try:
-            registered = set(line[0] for line in reader)
-        except ValueError:
-            print("Error converting lines to integeres")
+        registered = set(line[0] for line in reader)
     return registered
 
 
@@ -85,6 +84,7 @@ async def estado(ctx):
         total = len(RIDS)
         ready = len(registered)
         msg = f"Registros {ready}/{total} ({(ready/total)*100:.1f}%)"
+        LOGGER.info("Registration status", extra={'ready': ready, 'total': total})
         await ctx.send(msg)
 
 
