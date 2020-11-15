@@ -14,7 +14,7 @@ class ContextLogger(logging.Logger):
 def get_logger(name, lvl=logging.INFO, filename=None, verbose=False):
 
     formatter = logging.Formatter(
-        '%(asctime)s [%(levelname)s] %(module)s:%(funcName)s %(message)s')
+        '%(asctime)s [%(levelname)s] %(threadName)s:%(funcName)s %(message)s')
 
     logging.setLoggerClass(ContextLogger)
     logger = logging.getLogger(name)
