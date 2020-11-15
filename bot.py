@@ -119,7 +119,7 @@ async def registro(ctx, ticket_id: str):
 
         status = register_user(ticket_id.lower(), ctx.message)
 
-        LOGGER.error("Status resolved",
+        LOGGER.info("Status resolved",
                      extra={'author': ctx.author.name, 'status': status})
 
         if status == RegistrationStatus.OK:
