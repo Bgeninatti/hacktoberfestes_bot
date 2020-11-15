@@ -138,7 +138,4 @@ async def registro(ctx, ticket_id: str):
 bot.remove_command("help")
 
 # Starting the bot
-print("Running...")
-print(f"Total: {len(RIDS)}")
-print(f"Ready: {len(get_ready_tickets())}")
 bot.run(TOKEN)
