@@ -10,6 +10,8 @@ from discord.ext import commands
 from logger import get_logger
 
 LOGGER = get_logger(__name__)
+BASE_DIR = os.path.dirname(__name__)
+CONFIG_FILE = os.path.join(BASE_DIR, 'config.ini')
 
 
 if os.path.exists("config.ini"):
@@ -30,15 +32,18 @@ else:
         }
     }
 
+
 TOKEN = config["DEFAULT"]["Token"]
 GUILD = config["DEFAULT"]["Guild"]
 CHANNEL = config["DEFAULT"]["Channel"]
 ADMIN_CHANNEL = config["DEFAULT"]["AdminChannel"]
 ROLE = config["DEFAULT"]["Role"]
-LIST = config["DEFAULT"]["List"]
 VALIDATION_FIELD = config["DEFAULT"]["ValidationField"]
 
-RIDS = set(pd.read_csv(LIST)[VALIDATION_FIELD].str.lower())
+LIST_FILE = os.path.join(BASE_DIR, config['DEFAULT']['List'])
+ATTENDANCE_FILE = os.path.join(BASE_DIR, 'ready.csv')
+
+RIDS = set(pd.read_csv(LIST_FILE)[VALIDATION_FIELD].str.lower())
 
 bot = commands.Bot(command_prefix="\\")
 
@@ -50,7 +55,7 @@ class RegistrationStatus(Enum):
 
 def get_ready_tickets():
     registered = set()
-    with open("ready.csv", "r") as f:
+    with open(ATTENDANCE_FILE, "r") as f:
         reader = csv.reader(f)
         try:
             registered = set(line[0] for line in reader)
@@ -63,7 +68,7 @@ def register_user(ticket_id, msg):
     registered = get_ready_tickets()
     remaining = RIDS - registered
     if ticket_id in remaining:
-        with open("ready.csv", "a") as f:
+        with open(ATTENDANCE_FILE, "a") as f:
             csv_writer = csv.writer(f)
             csv_writer.writerow([ticket_id, msg.author, msg.created_at])
         return RegistrationStatus.OK
