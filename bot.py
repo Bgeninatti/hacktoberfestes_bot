@@ -101,7 +101,7 @@ async def registro(ctx, ticket_id: str):
                      extra={'author': ctx.author.name, 'status': status})
 
         if status == RegistrationStatus.OK:
-            msg = f"Usuario {ctx.message.author.mention} registrado! :)"
+            msg = f"Listo {ctx.message.author.mention}! Ahora deberías poder ver todos los canales en el servidor del evento :D"
             # TODO: Check if user already has the role
             await member.add_roles(role)
 
