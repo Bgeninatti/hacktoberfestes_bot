@@ -23,7 +23,7 @@ VALIDATION_FIELD = config["DEFAULT"]["ValidationField"]
 LIST_FILE = os.path.join(BASE_DIR, config['DEFAULT']['List'])
 ATTENDANCE_FILE = os.path.join(BASE_DIR, 'ready.csv')
 
-RIDS = set(pd.read_csv(LIST_FILE)[VALIDATION_FIELD].str.lower())
+RIDS = set(pd.read_csv(LIST_FILE, encoding='iso-8859-1')[VALIDATION_FIELD].str.lower())
 
 bot = commands.Bot(command_prefix="\\")
 
