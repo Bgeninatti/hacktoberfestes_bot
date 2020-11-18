@@ -1,12 +1,12 @@
-import asyncio
 import csv
 import os
 from enum import Enum
 
 import discord
 import pandas as pd
-from config import load_config
 from discord.ext import commands
+
+from config import load_config
 from logger import get_logger
 
 LOGGER = get_logger(__name__)
@@ -27,14 +27,15 @@ ATTENDANCE_FILE = os.path.join(BASE_DIR, 'ready.csv')
 WORKSHOP_FILE = os.path.join(BASE_DIR, config['DEFAULT']['WorkshopList'])
 WORKSHOP_READY_FILE = os.path.join(BASE_DIR, 'workshop_ready.csv')
 
-
 bot = commands.Bot(command_prefix="\\")
+
 
 # --> UTILS
 
 def load_rids(list_file):
     rids = set(pd.read_csv(list_file, encoding='iso-8859-1')[VALIDATION_FIELD].str.lower())
     return rids
+
 
 class RegistrationStatus(Enum):
     OK = 0
@@ -73,14 +74,13 @@ async def estado(ctx):
         rids = load_rids(LIST_FILE)
         total = len(rids)
         ready = len(registered)
-        msg = f"Registros {ready}/{total} ({(ready/total)*100:.1f}%)"
+        msg = f"Registros {ready}/{total} ({(ready / total) * 100:.1f}%)"
         LOGGER.info("Registration status", extra={'ready': ready, 'total': total})
         await ctx.send(msg)
 
 
 @bot.command(name="registro", help="Comando de registro", pass_context=True)
 async def registro(ctx, ticket_id: str):
-
     LOGGER.info("Command received", extra={'author': ctx.author.name})
 
     if not isinstance(ctx.channel, discord.DMChannel):
@@ -130,6 +130,7 @@ async def registro(ctx, ticket_id: str):
             # This should never happens, I Promise
             pass
 
+
 # --> Workshop Registration
 
 @bot.command(name="estado_taller", help="Comando para ver el estado actual de regitros a los talleres", pass_context=True)
@@ -139,9 +140,10 @@ async def estado_taller(ctx):
         rids = load_rids(WORKSHOP_FILE)
         total = len(rids)
         ready = len(registered)
-        msg = f"Registros {ready}/{total} ({(ready/total)*100:.1f}%)"
+        msg = f"Registros {ready}/{total} ({(ready / total) * 100:.1f}%)"
         LOGGER.info("Registration status", extra={'ready': ready, 'total': total})
         await ctx.send(msg)
+
 
 @bot.command(name="taller", help="Comando para darte de alta en el taller", pass_context=True)
 async def taller(ctx, email):
@@ -197,7 +199,6 @@ async def taller(ctx, email):
         else:
             # This should never happens, I Promise
             pass
-
 
 
 # Removing help command
