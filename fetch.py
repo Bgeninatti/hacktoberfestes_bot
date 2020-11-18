@@ -30,8 +30,6 @@ status, messages = imap.select("INBOX")
 N = 3
 messages = int(messages[0])
 
-LAST_EMAIL_DATE = None
-
 
 def load_rids(list_file):
     rids = set(pd.read_csv(list_file, encoding='iso-8859-1')[VALIDATION_FIELD].str.lower())
@@ -58,6 +56,7 @@ def _get_from_email(msg):
 
 
 def run():
+    last_email_date = None
     for i in range(messages, messages - N, -1):
         res, msg = imap.fetch(str(i), "(RFC822)")
         for response in msg:
@@ -75,9 +74,10 @@ def run():
 
                 timestamp = datetime.strptime(subject.replace(SUBJECT_PREFIX, ""), DATETIME_FORMAT)
 
-                global LAST_EMAIL_DATE
-                if LAST_EMAIL_DATE is None or LAST_EMAIL_DATE < timestamp:
-                    LAST_EMAIL_DATE = timestamp
+                last_email_date = last_email_date or timestamp
+
+                if last_email_date <= timestamp:
+                    last_email_date = timestamp
                 else:
                     break
 
