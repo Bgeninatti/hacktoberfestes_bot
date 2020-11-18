@@ -83,7 +83,6 @@ async def registro(ctx, ticket_id: str):
 
     LOGGER.info("Command received", extra={'author': ctx.author.name})
 
-    print(ctx.message.author.guild)
     if not isinstance(ctx.channel, discord.DMChannel):
         LOGGER.error("Command must be sent as private message",
                      extra={'author': ctx.author.name})
@@ -183,17 +182,17 @@ async def taller(ctx, email):
                      extra={'author': ctx.author.name, 'status': status})
 
         if status == RegistrationStatus.OK:
-            msg = f"Listo {ctx.message.author.mention}! Ahora deberías poder ver el canal de audio "
+            msg = f"Listo {ctx.message.author.mention}! Ahora deberías poder ver el canal de audio en la categoría Talleres. Recordá que el taller comienza el Miércoles 18 a las 16hs."
             # TODO: Check if user already has the role
             await member.add_roles(role)
 
             # Send final response
             await ctx.send(msg)
         elif status == RegistrationStatus.ALREADY_REGISTERED:
-            msg = "Ticket ya registrado"
+            msg = "Ese mail ya fue usado para registrarse al taller."
             await ctx.send(msg)
         elif status == RegistrationStatus.NOT_FOUND:
-            msg = "El ticket no existe. Estas seguro que lo ingresaste correctamente?"
+            msg = "No tenemos registrado ese mail dentro de los asistentes al taller del Miércoles 18 a las 16hs"
             await ctx.send(msg)
         else:
             # This should never happens, I Promise
