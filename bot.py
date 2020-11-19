@@ -124,7 +124,11 @@ async def registro(ctx, ticket_id: str):
             msg = "Ticket ya registrado"
             await ctx.send(msg)
         elif status == RegistrationStatus.NOT_FOUND:
-            msg = "El ticket no existe. Estas seguro que lo ingresaste correctamente?"
+            msg = f"Hola {ctx.message.author.mention}, gracias por escribirme, por el momento no encontramos registros con el mail que nos enviaste. \n " + \
+                   "Pero no desesperes! \n" + \
+                   "Te comento que tenemos una demora de 20 minutos desde que te registraste en el sitio del evento hasta que podemos hacer el check-in al server. \n" + \
+                   "Si te registraste hace menos de 20 minutos te pedimos que esperes uno minutos más. \n" + \
+                   "Si aún no te registraste, hacelo en este link: https://eventos.python.org.ar/events/pyconar2020/registration , esperá 20 minutos y volvé a escribirme!"
             await ctx.send(msg)
         else:
             # This should never happens, I Promise
@@ -194,7 +198,7 @@ async def taller(ctx, email):
             msg = "Ese mail ya fue usado para registrarse al taller."
             await ctx.send(msg)
         elif status == RegistrationStatus.NOT_FOUND:
-            msg = "No tenemos registrado ese mail dentro de los asistentes al taller del Miércoles 18 a las 16hs"
+            msg = "El ticket no existe. Estas seguro que lo ingresaste correctamente?"
             await ctx.send(msg)
         else:
             # This should never happens, I Promise
