@@ -23,13 +23,6 @@ VALIDATION_FIELD = config["DEFAULT"]["ValidationField"]
 
 SUBJECT_PREFIX = "Inscriptes PyConAr 2020 - "
 
-imap = imaplib.IMAP4_SSL("imap.gmail.com")
-imap.login(EMAIL_USER, EMAIL_PASSWORD)
-
-status, messages = imap.select("INBOX")
-N = 3
-messages = int(messages[0])
-
 LAST_EMAIL_DATE = None
 
 
@@ -58,6 +51,15 @@ def _get_from_email(msg):
 
 
 def run():
+    imap = imaplib.IMAP4_SSL("imap.gmail.com")
+    LOGGER.info("Login")
+    imap.login(EMAIL_USER, EMAIL_PASSWORD)
+
+    LOGGER.info("Fetching emails")
+    status, messages = imap.select("INBOX")
+    N = 3
+    messages = int(messages[0])
+
     for i in range(messages, messages - N, -1):
         res, msg = imap.fetch(str(i), "(RFC822)")
         for response in msg:
@@ -76,7 +78,9 @@ def run():
                 timestamp = datetime.strptime(subject.replace(SUBJECT_PREFIX, ""), DATETIME_FORMAT)
 
                 global LAST_EMAIL_DATE
-                if LAST_EMAIL_DATE is None or LAST_EMAIL_DATE < timestamp:
+                LAST_EMAIL_DATE = LAST_EMAIL_DATE or timestamp
+
+                if LAST_EMAIL_DATE <= timestamp:
                     LAST_EMAIL_DATE = timestamp
                 else:
                     break
@@ -94,6 +98,9 @@ def run():
 
                 registered = load_rids(LIST_FILE)
                 LOGGER.info(f"New loaded registered: {len(registered)}")
+
+    LOGGER.info("Logout")
+    imap.logout()
 
 
 if __name__ == "__main__":
