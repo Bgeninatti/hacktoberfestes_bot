@@ -5,15 +5,15 @@ from logger import get_logger
 
 LOGGER = get_logger(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_FILE = os.path.join(BASE_DIR, 'config.ini')
 
 
-def load_config():
-    if os.path.exists(CONFIG_FILE):
+def load_config(base_dir=BASE_DIR):
+    config_file = os.path.join(base_dir, 'config.ini')
+    if os.path.exists(config_file):
         # This is for local deploy with a config file
         config = configparser.ConfigParser()
-        config.read(CONFIG_FILE)
-        LOGGER.info("Configuration loaded from config file", extra={'file': CONFIG_FILE})
+        config.read(config_file)
+        LOGGER.info("Configuration loaded from config file", extra={'file': config_file})
     else:
         # This is for Heroku where configvars are set as environ variables
         config = {
